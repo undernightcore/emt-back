@@ -10,8 +10,8 @@ export default class TicketsController {
     const tickets = await user
       .related('tickets')
       .query()
-      .where('expiresAt', '>', DateTime.now().toJSDate())
-      .andWhere('activatedAt', '<', DateTime.now().plus({ hour: 1 }).toJSDate())
+      .where('expires_at', '>', DateTime.now().toJSDate())
+      .andWhere('activated_at', '<', DateTime.now().plus({ hour: 1 }).toJSDate())
       .paginate(page, perPage)
     return response.ok(tickets)
   }
