@@ -13,7 +13,7 @@ RUN npm ci
 COPY --chown=node:node . .
 
 FROM dependencies AS build
-RUN node ace build --production
+RUN node ace build
 
 FROM base AS production
 COPY --chown=node:node ./package*.json ./
