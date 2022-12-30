@@ -7,7 +7,7 @@ export default class TicketsController {
     const page = request.input('page', 1)
     const perPage = request.input('perPage', 10)
     await bouncer.with('GlobalPolicy').authorize('isActivated')
-    const tickets = user
+    const tickets = await user
       .related('tickets')
       .query()
       .where('expiresAt', '>', DateTime.now().toJSDate())
