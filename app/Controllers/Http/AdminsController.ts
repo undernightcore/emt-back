@@ -21,7 +21,7 @@ export default class AdminsController {
     const amount = request.input('amount', 1)
     const user = await User.findOrFail(params.id)
     const newTickets = Array(amount).fill({
-      expiresAt: DateTime.now().plus({ month: 6 }).toJSDate(),
+      expiresAt: DateTime.now().plus({ month: 6 }),
     })
     await user.related('tickets').createMany(newTickets)
     return response.created({
