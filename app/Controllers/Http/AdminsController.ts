@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import { DateTime } from 'luxon'
 
 export default class AdminsController {
   public async activateUser({ request, response, auth, bouncer, params }: HttpContextContract) {
@@ -11,6 +12,20 @@ export default class AdminsController {
     await user.save()
     return response.ok({
       message: newStatus ? `¡Has activado a ${user.name}!` : `¡Has desactivado a ${user.name}!`,
+    })
+  }
+
+  public async addTickets({ request, response, auth, bouncer, params }: HttpContextContract) {
+    await auth.authenticate()
+    await bouncer.with('GlobalPolicy').authorize('isAdmin')
+    const amount = request.input('amount', 1)
+    const user = await User.findOrFail(params.id)
+    const newTickets = Array(amount).fill({
+      expiresAt: DateTime.now().plus({ month: 6 }).toJSDate(),
+    })
+    await user.related('tickets').createMany(newTickets)
+    return response.created({
+      message: `Se han creado ${params.amount ?? 1} tickets para ${user.name}`,
     })
   }
 
