@@ -1,23 +1,12 @@
-ARG NODE_IMAGE=node:16.13.1-alpine
+FROM node:latest
 
-FROM $NODE_IMAGE AS base
-RUN apk --no-cache add dumb-init
-RUN mkdir -p /home/node/app && chown node:node /home/node/app
-WORKDIR /home/node/app
-USER node
-RUN mkdir tmp
-
-FROM base AS dependencies
-COPY --chown=node:node ./package*.json ./
-RUN npm ci
-COPY --chown=node:node . .
-
-FROM dependencies AS build
+WORKDIR /usr/local/app
+COPY ./ /usr/local/app/
+RUN npm install
+RUN npm install @adonisjs/assembler
+RUN node ace migration:fresh
 RUN node ace build
 
-FROM base AS production
-COPY --chown=node:node ./package*.json ./
-RUN npm ci
-COPY --chown=node:node --from=build /home/node/app/build .
+WORKDIR /usr/local/app/build
+RUN node server.js
 EXPOSE 3333
-CMD [ "dumb-init", "node", "server.js" ]
