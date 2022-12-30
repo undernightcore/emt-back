@@ -1,11 +1,23 @@
-FROM node:latest
-ENV CACHE_DIR /usr/local/app/.cache/
-WORKDIR /usr/local/app
-COPY ./ /usr/local/app/
-RUN npm install
-RUN node ace migration:fresh
-RUN node ace build
-RUN cp /usr/local/app/.env /usr/local/app/build/
-WORKDIR /usr/local/app/build
-RUN node server.js
+ARG NODE_IMAGE=node:16.13.1-alpine
+
+FROM $NODE_IMAGE AS base
+RUN apk --no-cache add dumb-init
+RUN mkdir -p /home/node/app && chown node:node /home/node/app
+WORKDIR /home/node/app
+USER node
+RUN mkdir tmp
+
+FROM base AS dependencies
+COPY --chown=node:node ./package*.json ./
+RUN npm ci
+COPY --chown=node:node . .
+
+FROM dependencies AS build
+RUN node ace build --production
+
+FROM base AS production
+COPY --chown=node:node ./package*.json ./
+RUN npm ci --production
+COPY --chown=node:node --from=build /home/node/app/build .
 EXPOSE 3333
+CMD [ "dumb-init", "node", "server.js" ]
