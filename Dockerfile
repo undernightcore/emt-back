@@ -1,4 +1,5 @@
 FROM node:latest
+ENV CACHE_DIR /usr/local/app/.cache/
 WORKDIR /usr/local/app
 COPY ./ /usr/local/app/
 RUN npm install
