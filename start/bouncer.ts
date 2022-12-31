@@ -4,4 +4,5 @@ export const { actions } = Bouncer
 
 export const { policies } = Bouncer.registerPolicies({
   GlobalPolicy: () => import('App/Policies/GlobalPolicy'),
+  TicketPolicy: () => import('App/Policies/TicketPolicy'),
 })
