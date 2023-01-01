@@ -14,9 +14,22 @@ export default class TicketsController {
       .where('expires_at', '>', DateTime.now().toJSDate())
       .andWhere((query) => {
         query
-          .where('activated_at', '<', DateTime.now().plus({ hour: 1 }).toJSDate())
+          .where('activated_at', '>', DateTime.now().minus({ hour: 1 }).toJSDate())
           .orWhereNull('activated_at')
       })
+      .paginate(page, perPage)
+    return response.ok(tickets)
+  }
+
+  public async getHistory({ request, response, auth, bouncer }: HttpContextContract) {
+    const user = await auth.authenticate()
+    const page = request.input('page', 1)
+    const perPage = request.input('perPage', 10)
+    await bouncer.with('GlobalPolicy').authorize('isActivated')
+    const tickets = await user
+      .related('tickets')
+      .query()
+      .where('activated_at', '<=', DateTime.now().minus({ hour: 1 }).toJSDate())
       .paginate(page, perPage)
     return response.ok(tickets)
   }
@@ -40,7 +53,10 @@ export default class TicketsController {
     await bouncer.with('TicketPolicy').authorize('isOwnTicket', ticket)
     if (!ticket.activatedAt)
       return response.status(400).send({ errors: ['Este ticket no está activado.'] })
-    if (ticket.expiresAt <= DateTime.now())
+    if (
+      ticket.expiresAt <= DateTime.now() ||
+      ticket.activatedAt <= DateTime.now().minus({ hour: 1 })
+    )
       return response.status(400).send({ errors: ['Este ticket ya ha caducado.'] })
     return response.ok(ticket)
   }
