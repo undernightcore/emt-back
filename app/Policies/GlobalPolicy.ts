@@ -9,6 +9,6 @@ export default class GlobalPolicy extends BasePolicy {
   }
 
   public async isAdmin(user: User) {
-    return user.admin ? true : Bouncer.deny('Pero que haces?! Que no eres admin!')
+    return user.admin ? true : Bouncer.deny('Pero que haces?! Que no eres admin!', 403)
   }
 }
