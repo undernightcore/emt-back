@@ -44,7 +44,7 @@ const corsConfig: CorsConfig = {
   |                     one of the above values.
   |
   */
-  origin: ['emt.puntaserver.com, localhost'],
+  origin: ['emt.puntaserver.com', 'localhost'],
 
   /*
   |--------------------------------------------------------------------------
