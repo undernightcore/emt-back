@@ -42,4 +42,9 @@ export default class AdminsController {
       .paginate(page, perPage)
     return response.ok(users)
   }
+
+  public async isAdmin({ response, auth }: HttpContextContract) {
+    const user = await auth.authenticate()
+    return response.ok(user.admin)
+  }
 }
