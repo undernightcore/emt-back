@@ -25,7 +25,7 @@ export default class AdminsController {
     })
     await user.related('tickets').createMany(newTickets)
     return response.created({
-      message: `Se han creado ${params.amount ?? 1} tickets para ${user.name}`,
+      message: `Se han creado ${amount ?? 1} tickets para ${user.name}`,
     })
   }
 
