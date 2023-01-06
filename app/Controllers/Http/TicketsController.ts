@@ -17,7 +17,7 @@ export default class TicketsController {
           .where('activated_at', '>', DateTime.now().minus({ hour: 1 }).toJSDate())
           .orWhereNull('activated_at')
       })
-      .orderBy('activated_at', 'desc')
+      .orderBy('activated_at', 'asc')
       .paginate(page, perPage)
     return response.ok(tickets)
   }
